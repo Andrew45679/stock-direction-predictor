@@ -75,6 +75,14 @@ python src/evaluate.py
 | Random Forest | 44.76% | 0% |
 | **XGBoost** | **48.79%** | **71%** |
 
+*Confusion matrices for S&P 500 test data (2023-2024):*
+
+![Logistic Regression](outputs/figures/Logistic_Regression_confusion_matrix.png)
+![Random Forest](outputs/figures/Random_Forest_Classifier_confusion_matrix.png)
+![XGBoost](outputs/figures/XGBoost_Classifier_confusion_matrix.png)
+
+*Confusion matrices shown for S&P 500 (^GSPC). Results for AAPL and TSLA available by running the pipeline locally.*
+
 ### Apple (AAPL)
 | Model | Accuracy | Precision (Up) |
 |---|---|---|

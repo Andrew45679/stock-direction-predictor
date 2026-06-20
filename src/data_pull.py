@@ -5,7 +5,7 @@ This script downloads historical financial data using Yahoo Finance and
 combines multiple market indicators into a single dataset.
 
 Data sources:
-- S&P 500 (^GSPC)
+- Stock Price
 - Volatility Index (^VIX)
 - 10-Year Treasury Yield (^TNX)
 
