@@ -75,13 +75,22 @@ python src/evaluate.py
 | Random Forest | 44.76% | 0% |
 | **XGBoost** | **48.79%** | **71%** |
 
+
 *Confusion matrices for S&P 500 test data (2023-2024):*
 
-![Logistic Regression](outputs/figures/Logistic_Regression_confusion_matrix.png)
-![Random Forest](outputs/figures/Random_Forest_Classifier_confusion_matrix.png)
-![XGBoost](outputs/figures/XGBoost_Classifier_confusion_matrix.png)
+![Logistic Regression](outputs/figures/Logistic%20Regression_confusion_matrix.png)
 
-*Confusion matrices shown for S&P 500 (^GSPC). Results for AAPL and TSLA available by running the pipeline locally.*
+*Logistic Regression struggled to identify upward moves, predicting down the majority of the time.*
+
+
+![Random Forest](outputs/figures/Random%20Forest%20Classifier_confusion_matrix.png)
+
+*Random Forest predicted almost exclusively downward moves on S&P 500 test data.*
+
+
+![XGBoost](outputs/figures/XGBoost%20Classifier_confusion_matrix.png)
+
+*XGBoost performed best, correctly identifying upward moves 71% of the time.*
 
 ### Apple (AAPL)
 | Model | Accuracy | Precision (Up) |
