@@ -28,21 +28,16 @@ from xgboost import XGBClassifier
 df = pd.read_csv("data/processed/processedData.csv")
 
 # Split data chronologically to prevent data leakage
-train_df = df[df["Year"] < 2021]
-val_df = df[(df["Year"] >= 2021) & (df["Year"] < 2023)]
+train_df = df[df["Year"] < 2023]
 test_df = df[df["Year"] >= 2023]
 
 # Drop Year column as it is not a predictive feature
 train_df = train_df.drop(columns='Year')
-val_df = val_df.drop(columns='Year')
 test_df = test_df.drop(columns='Year')
 
 # Separate features and target variable
 train_inputs = train_df.drop(columns=['Target'])
 train_target = train_df['Target']
-
-val_inputs = val_df.drop(columns=['Target'])
-val_target = val_df['Target']
 
 test_inputs = test_df.drop(columns=['Target'])
 test_target = test_df['Target']
@@ -53,7 +48,6 @@ scaler.fit(train_inputs)
 
 # Apply same scaling to all splits
 train_inputs = scaler.transform(train_inputs)
-val_inputs = scaler.transform(val_inputs)
 test_inputs = scaler.transform(test_inputs)
 
 # --- Logistic Regression ---
@@ -97,7 +91,12 @@ grid_XGB.fit(train_inputs, train_target)
 model_XGB = grid_XGB.best_estimator_
 print("The Best Params for XGBoost are: \n", grid_XGB.best_params_)
 
-# Save trained models to disk
+print("RFC train accuracy:", grid_RFC.best_score_)
+print("XGB train accuracy:", grid_XGB.best_score_)
+
+
+# Save trained models and scaler to disk
 joblib.dump(model_LR, 'models/model_LR.joblib')
 joblib.dump(model_RFC, 'models/model_RFC.joblib')
 joblib.dump(model_XGB, 'models/model_XGB.joblib')
+joblib.dump(scaler, 'models/scaler.joblib')

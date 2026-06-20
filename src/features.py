@@ -64,6 +64,15 @@ df_processed["RSI_14"] = 100 - (100 / (1 + rs))
 df_processed["Future_Return"] = df_processed["Close"].pct_change().shift(-1)
 df_processed["Target"] = (df_processed["Future_Return"] > 0).astype(int)
 
+# Volume change captures unusual trading activity which often precedes price moves
+df_processed['Volume_Change'] = df_processed['Volume'].pct_change()
+
+# Price range measures intraday volatility relative to closing price
+df_processed['Price_Range'] = (df_processed['High'] - df_processed['Low']) / df_processed['Close']
+
+# Replace any infinity values with NaN
+df_processed = df_processed.replace([np.inf, -np.inf], np.nan)
+
 # Remove NaN rows from dataset
 df_processed = df_processed.dropna()
 df_processed = df_processed.drop(columns=['Future_Return'])
