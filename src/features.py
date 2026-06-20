@@ -60,9 +60,13 @@ avg_loss = loss.rolling(14).mean()
 rs = avg_gain / avg_loss
 df_processed["RSI_14"] = 100 - (100 / (1 + rs))
 
+# Adding a target column
+df_processed["Future_Return"] = df_processed["Close"].pct_change().shift(-1)
+df_processed["Target"] = (df_processed["Future_Return"] > 0).astype(int)
 
-# Remove NaN rows from feature engineering
+# Remove NaN rows from dataset
 df_processed = df_processed.dropna()
+df_processed = df_processed.drop(columns=['Future_Return'])
 
 # Save processed dataset
 df_processed.to_csv("data/processed/processedData.csv", index=False)

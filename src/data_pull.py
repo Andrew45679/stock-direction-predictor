@@ -16,11 +16,12 @@ import yfinance as yf
 import pandas as pd
 
 # Define time range for data collection
+TICKER = input("Enter ticker symbol (e.g. AAPL, ^GSPC, TSLA): ")
 START_DATE = "2015-01-01"
 END_DATE = "2024-01-01"
 
 # Download market index data for the S&P 500
-df_price = yf.download("^GSPC", start=START_DATE, end=END_DATE)
+df_price = yf.download(TICKER, start=START_DATE, end=END_DATE)
 
 # Download volatility index 
 df_vix = yf.download("^VIX", start=START_DATE, end=END_DATE)
