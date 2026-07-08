@@ -28,16 +28,19 @@ All models tuned using GridSearchCV with TimeSeriesSplit cross-validation.
 stock-direction-predictor/
 
 ├── data/
-│   ├── raw/            # Raw data pulled from Yahoo Finance
-│   └── processed/      # Cleaned and feature engineered data
+│   ├── raw/             # Raw data pulled from Yahoo Finance
+│   └── processed/       # Cleaned and feature engineered data
 ├── src/
-│   ├── data_pull.py    # Downloads market data via yfinance
-│   ├── features.py     # Feature engineering and data processing
-│   ├── train.py        # Model training and hyperparameter tuning
-│   └── evaluate.py     # Model evaluation and confusion matrices
-├── models/             # Saved trained models
+│   ├── data_pull.py     # Downloads market data via yfinance
+│   ├── features.py      # Feature engineering and data processing
+│   ├── train.py         # Model training and hyperparameter tuning
+│   ├── evaluate.py      # Model evaluation and confusion matrices
+│   ├── backtest.py      # Strategy backtesting and equity curve plots
+│   ├── model_explain.py # SHAP feature importance and explainability
+│   └── app.py           # Streamlit web app for live predictions
+├── models/              # Saved trained models
 ├── outputs/
-│   └── figures/        # Confusion matrix plots
+│   └── figures/         # Confusion matrix plots
 ├── README.md
 └── requirements.txt
 ```
@@ -50,8 +53,15 @@ pip install -r requirements.txt
 ```
 
 ## Usage
-Run each file in order:
 
+### Try the live app
+```bash
+streamlit run src/app.py
+```
+Enter any ticker to get a live prediction with confidence score and SHAP explanation
+
+### Rebuild the full pipeline (optional)
+To reproduce the models from scratch:
 ```bash
 # 1. Pull market data (you will be prompted to enter a ticker symbol)
 python src/data_pull.py
@@ -64,6 +74,15 @@ python src/train.py
 
 # 4. Evaluate models and generate confusion matrices
 python src/evaluate.py
+
+# 5. Run the backtest
+python src/backtest.py
+
+# 6. Generate SHAP explainability plots
+python src/model_explain.py
+
+# 7. Launch the live prediction app
+streamlit run src/app.py
 ```
 
 ## Results
@@ -106,6 +125,29 @@ python src/evaluate.py
 | **Random Forest** | **47.79%** | **54%** |
 | XGBoost | 46.59% | 52% |
 
+## Backtest Results
+
+Using the trained XGBoost model to generate daily trading signals, a
+simple long/flat strategy was backtested against a buy-and-hold benchmark.
+
+| Metric | Strategy |
+|---|---|
+| Sharpe Ratio | 0.98 |
+| Max Drawdown | -3.59% |
+| Win Rate | 61.90% |
+| Cumulative Return | 3.55% |
+| Buy & Hold Return | 23.50% |
+
+![Equity Curve](outputs/figures/equity_curve.png)
+
+## Model Explainability
+
+SHAP (SHapley Additive exPlanations) values were used to interpret the
+XGBoost model's predictions and understand which features drive its
+buy/sell signals.
+
+![SHAP Summary](outputs/figures/shap_summary.png)
+
 ## Key Findings
 
 After training on data from 2015 to 2022, all three models were evaluated on 2023-2024 market data which turned out to be one of the most unusual periods in recent market history. Overall accuracy came in below 50% across the board, which isn't surprising given that no model trained on pre-2023 data could have anticipated the AI-driven bull run that defined that period. That said, there were some genuinely interesting results. XGBoost called upward moves on the S&P 500 correctly 71% of the time, and Random Forest hit 85% precision on AAPL upward predictions. TSLA gave the most balanced results across all three models, which makes sense given how volatile the stock tends to be. The biggest takeaway is that precision on upward predictions matters more than raw accuracy for this kind of problem.
@@ -118,7 +160,6 @@ Data was collected using the yfinance API, pulling daily OHLCV data for the targ
 
 - Retrain models on a rolling window basis every 3-6 months to adapt to changing market conditions
 - Add news sentiment features using a financial news API to capture market moving events
-- Build a Streamlit dashboard for live predictions on any ticker
 - Expand evaluation to a wider range of tickers across different sectors
 
 ## Technologies Used
@@ -130,3 +171,5 @@ Data was collected using the yfinance API, pulling daily OHLCV data for the targ
 - matplotlib
 - seaborn
 - joblib
+- shap
+- streamlit

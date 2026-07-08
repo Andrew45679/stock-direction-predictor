@@ -48,7 +48,8 @@ test_df["buy_hold"] = (1 + test_df["Daily_Return"]).cumprod()
 # Performance metrics
 sharpe = (test_df["strategy_return"].mean() / test_df["strategy_return"].std()) * np.sqrt(252)
 max_dd = (test_df["strategy_equity"] / test_df["strategy_equity"].cummax() - 1).min()
-win_rate = (test_df["strategy_return"] > 0).mean()
+active_days = test_df[test_df["position"] != 0]
+win_rate = (active_days["strategy_return"] > 0).mean() if len(active_days) > 0 else float("nan")
 
 # Print results
 print("Sharpe Ratio:      {:.2f}".format(sharpe))
