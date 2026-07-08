@@ -15,33 +15,31 @@ The final dataset is saved as a CSV for downstream analysis or modeling.
 import yfinance as yf
 import pandas as pd
 
-# Define time range for data collection
-TICKER = input("Enter ticker symbol (e.g. AAPL, ^GSPC, TSLA): ")
-START_DATE = "2015-01-01"
-END_DATE = "2024-01-01"
 
-# Download market index data for the S&P 500
-df_price = yf.download(TICKER, start=START_DATE, end=END_DATE)
+def fetch_market_data(ticker, start_date, end_date):
+    """
+    Downloads price data for the given ticker plus VIX and TNX,
+    merges them into a single dataframe.
+    """
+    df_price = yf.download(ticker, start=start_date, end=end_date)
+    df_vix = yf.download("^VIX", start=start_date, end=end_date)
+    df_tnx = yf.download("^TNX", start=start_date, end=end_date)
 
-# Download volatility index 
-df_vix = yf.download("^VIX", start=START_DATE, end=END_DATE)
+    final_df = df_price.copy()
+    final_df["VIX_close"] = df_vix["Close"]
+    final_df["TNX_close"] = df_tnx["Close"]
 
-# Download 10-year treasury yield 
-df_tnx = yf.download("^TNX", start=START_DATE, end=END_DATE)
+    final_df = final_df.dropna()
+    final_df = final_df.droplevel(1, axis=1)
+    final_df = final_df.reset_index()
 
-# Start building final dataset using S&P 500 as the base
-final_df = df_price.copy()
+    return final_df
 
-# Adding more columns to the base from the volatility index and 10-year treasury yield
-final_df["VIX_close"] = df_vix["Close"]
-final_df["TNX_close"] = df_tnx["Close"]
 
-# Remove rows with missing values
-final_df = final_df.dropna()
+if __name__ == "__main__":
+    TICKER = input("Enter ticker symbol (e.g. AAPL, ^GSPC, TSLA): ")
+    START_DATE = "2015-01-01"
+    END_DATE = "2024-01-01"
 
-# Flatten multi-index columns by getting rid of the Tickers
-final_df = final_df.droplevel(1, axis=1)
-
-# Save cleaned dataset in data/raw
-final_df.to_csv("data/raw/rawData.csv", index=True)
-
+    final_df = fetch_market_data(TICKER, START_DATE, END_DATE)
+    final_df.to_csv("data/raw/rawData.csv", index=True)
